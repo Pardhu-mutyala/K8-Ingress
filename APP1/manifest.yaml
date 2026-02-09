@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Deployment
+metadata: 
+  name: app1
+  #replica set labels which can used under selectors to club the images
+  labels:
+    purpose: Ingress-demo
+    project: roboshop
+    app: app1
+spec:
+  replicas: 2
+  # these are the labels replica set labels to create pod replicas, this should match pod labels
+  selector:
+    matchLabels:
+      purpose: Ingress-demo
+      project: roboshop
+      app: app1
+  #this is pod defnition template
+  template:
+    metadata:
+      labels:
+        purpose: Ingress-demoo
+        project: roboshop
+        app: app1
+    spec:
+      containers:
+        - name: app1
+          image: pardhu72/app1:v1
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app1
+  labels:
+    purpose: Ingress-demoo
+    project: roboshop
+    app: app1
+
+spec:
+  selector:
+    purpose: Ingress-demoo
+    project: roboshop
+    app: app1
+  ports:
+    - protocol: TCP
+      port: 80 # service port\
+      targetPort: 80 # conatiner port
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-wildcard-host
+  annotations:
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/certificates.arn: "" #we can find this arn in AWS certificate manager
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  rules:
+  - host: "app1.rise.shine"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: app1
+            port:
+              number: 80 #app1 servive port number
+  

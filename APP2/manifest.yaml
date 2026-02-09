@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Deployment
+metadata: 
+  name: app2
+  #replica set labels which can used under selectors to club the images
+  labels:
+    purpose: Ingress-demo
+    project: roboshop
+    app: app2
+spec:
+  replicas: 2
+  # these are the labels replica set labels to create pod replicas, this should match pod labels
+  selector:
+    matchLabels:
+      purpose: Ingress-demo
+      project: roboshop
+      app: app2
+  #this is pod defnition template
+  template:
+    metadata:
+      labels:
+        purpose: Ingress-demoo
+        project: roboshop
+        app: app2
+    spec:
+      containers:
+        - name: app2
+          image: pardhu72/app2:v1
