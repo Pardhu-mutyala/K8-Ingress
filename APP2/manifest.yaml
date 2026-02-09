@@ -26,3 +26,48 @@ spec:
       containers:
         - name: app2
           image: pardhu72/app2:v1
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app2
+  labels:
+    purpose: Ingress-demoo
+    project: roboshop
+    app: app2
+
+spec:
+  selector:
+    purpose: Ingress-demoo
+    project: roboshop
+    app: app2
+  ports:
+    - protocol: TCP
+      port: 80 # service port\
+      targetPort: 80 # conatiner port
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-app-host
+  annotations:
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/certificates.arn: "" #we can find this arn in AWS certificate manager
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/group.name: rise
+spec:
+  ingressClassName: ingress-alb
+  rules:
+  - host: "app2.rise.shine"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: app2
+            port:
+              number: 80 #app1 servive port number
+  

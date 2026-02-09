@@ -50,13 +50,15 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-wildcard-host
+  name: ingress-app-host
   annotations:
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
     alb.ingress.kubernetes.io/certificates.arn: "" #we can find this arn in AWS certificate manager
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/group.name: rise
 spec:
+  ingressClassName: ingress-alb
   rules:
   - host: "app1.rise.shine"
     http:
